@@ -1,5 +1,4 @@
 let baseURL = 'http://api.weatherapi.com/v1';
-let current = '/current.json';
 let forecast = '/forecast.json';
 let APIkey = '05c250ceb9ab4a58be4145459242602';
 let locationQuery = '&q=';
@@ -7,47 +6,47 @@ let airQual = '&aqi=no';
 let days = '&days=3';
 let alerts = '&alerts=no';
 
-// get right now data
-async function getCurrentWeather(location) {
-    const response = await fetch(`${baseURL}${current}?key=${APIkey}${locationQuery}${location}${airQual}`, { mode: "cors" });
-
-    return await response.json();
-}
-
-// get 3 day ahead
+// get 3 day forecast
 async function getForecast(location) {
     const response = await fetch(`${baseURL}${forecast}?key=${APIkey}${locationQuery}${location}${days}${airQual}${alerts}`, { mode: "cors" });
 
     return await response.json();
 }
 
-// populate html with weather info
-// function populateWeather(weatherData) {
+const searchInput = document.querySelector('.search-bar');
+const searchButton = document.querySelector('.search-button');
+searchButton.addEventListener('click', async () => {
+    if (searchInput.value !== '') {
+        const weatherData = await getForecast(searchInput.value);
+        populateWeather(weatherData);
+    }
+});
 
-// }
+// populate html with weather info
+async function populateWeather(weather) {
+    console.log(weather);
+    document.querySelector('.town').textContent = weather.location.name;
+    document.querySelector('.region').textContent = weather.location.region;
+    document.querySelector('.country').textContent = weather.location.country;
+    const condition = weather.current.condition.text;
+    const temperature = weather.current.temp_f;
+
+    // console.log(document.getElementsByClassName('day-card'));
+    let divs = document.getElementsByClassName('day-card');
+    console.log(divs);
+    for (let i = 0; i < divs.length; i++) {
+        console.log(divs[i]);
+        divs[i].querySelector('.date').textContent = weather.forecast.forecastday[i].date;
+        // document.querySelector('.day-forecast').textContent = weather.forecast.forecastday[i];
+        // document.querySelector('.icon-forecast').textContent;
+        divs[i].querySelector('.avg-humidity').textContent = `Humidity: ${weather.forecast.forecastday[i].day.avghumidity}%`;
+        divs[i].querySelector('.avgtemp_f').textContent = `Temperature: ${weather.forecast.forecastday[i].day.avgtemp_f}°F`;
+        divs[i].querySelector('.mintemp_f').textContent = `Min Temp: ${weather.forecast.forecastday[i].day.mintemp_f}°F`;
+        divs[i].querySelector('.maxtemp_f').textContent = `Max Temp: ${weather.forecast.forecastday[i].day.maxtemp_f}°F`;
+    }
+}
 
 // test
 (async () => {
-    let location = 'Montreal';
-    let data = await getCurrentWeather(location);
-    console.log(data.current);
-    console.log(data.location);
-
-    const town = data.location.name;
-    const region = data.location.region;
-    console.log(`${town}, ${region}`);
-
-    const condition = data.current.condition.text;
-    const temperature = data.current.temp_f;
-    console.log(`${condition}. Temp: ${temperature}F`);
-
-    let weather = await getForecast('03865');
-    console.log(weather);
-    let today = weather.forecast.forecastday[0];
-    let tomorrow = weather.forecast.forecastday[1];
-    let nextDay = weather.forecast.forecastday[2];
-
-    console.log(today);
-    console.log(tomorrow);
-    console.log(nextDay);
+    // populateWeather(location);
 })();
