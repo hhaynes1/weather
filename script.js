@@ -1,4 +1,4 @@
-let baseURL = 'http://api.weatherapi.com/v1';
+let baseURL = 'https://api.weatherapi.com/v1';
 let forecast = '/forecast.json';
 let APIkey = '05c250ceb9ab4a58be4145459242602';
 let locationQuery = '&q=';
